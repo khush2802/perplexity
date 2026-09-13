@@ -100,3 +100,58 @@ export async function verifyEmail(req, res) {
         })
     }
 }
+
+
+export async function login(req, res){
+    const {email, password} = req.body;
+
+    const user = await userModel.findOne({email});
+
+    if(user ==  false){
+        res.status(400).json({
+            message:"Invalid user",
+            success:"false",
+            err:"User not found"
+        })
+    }
+
+    const isPassword = await user.comparePassword(password);
+
+    if(isPassword == false){
+        res.status(400).json({
+            message:"Invalid email or passowrd",
+            success:"false",
+            err:"Invalid cedintial"
+
+        })
+    }
+
+    if(user.verified == false){
+        return res.status(400).json({
+            message: "Please verify your email before logging in",
+            success: false,
+            err: "Email not verified"
+        })
+    }
+
+
+    const token = jwt.sign({
+        id:user._id,
+        email:user.email
+    }, process.env.JWT_SECRET, 
+{expiresIn:"1d"});
+
+    res.cookie("token", token);
+
+     res.status(200).json({
+        message: "Login successful",
+        success: true,
+        user: {
+            id: user._id,
+            username: user.username,
+            email: user.email
+        }
+    })
+
+       
+}
