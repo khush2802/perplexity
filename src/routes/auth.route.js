@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register } from "../controllers/auth.controller.js";
+import { register , verifyEmail} from "../controllers/auth.controller.js";
 import { registerValidator } from "../validators/auth.validator.js";
 // import { authUser } from "../middleware/auth.middleware.js";
 
@@ -12,6 +12,16 @@ const authRouter = Router();
  * @body { username, email, password }
  */
 authRouter.post("/register", registerValidator, register);
+
+
+/**
+ * @route GET /api/auth/verify-email
+ * @desc Verify user's email address
+ * @access Public
+ * @query { token }
+ */
+
+authRouter.get("/verify-email", verifyEmail);
 
 
 
